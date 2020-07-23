@@ -2,12 +2,12 @@
 
 This repository contains functions I used to make a movie visualizations, along with notebooks/source files that are used in critiques of other devices 
 
-![visualizations](kmeans_color/k5/coco.png)
-![visualizations](kmeans_color/k5/madmax.png)
-![visualizations](kmeans_color/k5/minions.png)
-![visualizations](kmeans_color/k5/shrek.png)
-![visualizations](kmeans_color/k5/simpson.png)
-![visualizations](kmeans_color/k5/spiderman.png)
+![visualizations](kmeans_color/k5/coco.png?raw=true)
+![visualizations](kmeans_color/k5/madmax.png?raw=true)
+![visualizations](kmeans_color/k5/minions.png?)
+![visualizations](kmeans_color/k5/shrek.png?)
+![visualizations](kmeans_color/k5/simpson.png?)
+![visualizations](kmeans_color/k5/spiderman.png?)
 
 # Instructions
 
