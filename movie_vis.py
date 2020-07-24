@@ -218,7 +218,7 @@ def kmeans_prop(fname, sample_rate, slice_w, slice_h, down_sample=0.25, num_clus
     cap.release()
     return vis_output
 
-def most_prom_col(fname):
+def most_freq_col(fname):
     """Function to produce a "most frequent" visualization from an existing
     kmeans visualization.
 
@@ -240,11 +240,11 @@ def most_prom_col(fname):
     vis_output[:,] = prom_colors
     return vis_output
 
-def least_prom_col(fname):
+def least_freq_col(fname):
     """Function to produce a "least frequent" visualization from an existing
     kmeans visualization
 
-    TODO: This function and [most_prom_col] can be refactored, but I'll keep 
+    TODO: This function and [most_freq_col] can be refactored, but I'll keep 
     them seperate for now
     
     Parameters
@@ -335,14 +335,17 @@ def process_kmean_vis(str_format, nickname, fname, framerate, slice_w, slice_h, 
         Returns True if the function completes with no error.
 
     """
-    vis = kmeans_prop(fname, framerate, slice_w, slice_h, down_sample=0.5, num_clusters=num_col)
+    vis = kmeans_prop(fname, framerate, slice_w, slice_h, down_sample=0.25, num_clusters=num_col)
     im = Image.fromarray(vis)
     im.save(str_format.format(nickname))
     print("done processing:", fname)
     return True
 
 def load_image(fname):
-    """Returns an image as a matplotlib compatabile numpy array with cv2 
+    """Returns an image as a matplotlib compatabile numpy array with cv2
+
+    TODO: I'll probably delete this because it's pretty redundant adn only useful
+    in jupyter notebooks
     """
     return cv2.cvtColor(cv2.imread(fname), cv2.COLOR_RGB2BGR)
 
@@ -435,12 +438,12 @@ if __name__ == '__main__':
     #     for fname in group:
     #         outf1 = fname.split('/')[1:]
     #         outf1.insert(0, 'most_prom_vis')
-    #         im1 = Image.fromarray(most_prom_col(fname))
+    #         im1 = Image.fromarray(most_freq_col(fname))
     #         im1.save('/'.join(outf1))
             
     #         outf2 = fname.split('/')[1:]
     #         outf2.insert(0, 'least_prom_vis')
-    #         im2 = Image.fromarray(least_prom_col(fname))
+    #         im2 = Image.fromarray(least_freq_col(fname))
     #         im2.save('/'.join(outf2))
 
     #         outf3 = fname.split('/')[1:]
