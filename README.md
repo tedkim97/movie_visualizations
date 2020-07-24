@@ -1,16 +1,22 @@
 # Movie Visualizations
+This repository contains a new movie barcode visualization that uses a clustering algorithm to extract more accurate representations of colors in a movie. This new visualization shows the relative presence of the different colors extracted for a user-defined number of clusters. In addition, this repository contains implementations of other popular movie visualizations, test images, and notebooks for demonstrative reasons.  
 
-This repository contains functions I used to make a movie visualizations, along with notebooks/source files that are used in critiques of other devices 
-
+### KMeans Extracted Visualization (with proportional representation)
 ![visualizations1](final_figures/kmeans_color/k5/coco.png?raw=true)
 ![visualizations2](final_figures/kmeans_color/k5/madmax.png?raw=true)
-![visualizations3](final_figures/kmeans_color/k5/minions.png?)
-![visualizations4](final_figures/kmeans_color/k5/shrek.png?)
-![visualizations5](final_figures/kmeans_color/k5/simpson.png?)
-![visualizations6](final_figures/kmeans_color/k5/spiderman.png?)
+![visualizations3](final_figures/kmeans_color/k5/spiderman.png?raw=true)
+
+### KMeans Extracted Visualization (with equal representation)
+![visualizations4](final_figures/kcolor/coco.png?raw=true)
+
+### Most Frequent Color Visualization (derived from our KMeans Extracted Vis)
+![visualizations5](final_figures/most_freq/simpson.png?raw=true)
+
+### Least Frequent Color Visualization (derived from our KMeans Extracted Vis)
+![visualizations6](final_figures/least_freq/spiderman.png?raw=true)
 
 # Instructions
-Depending on the type of visualization you want, you can run: 
+Depending on the type of visualization you want, you can run the bottom. Note that `kmeans_prop` is the one that generates a KMeans Extracted Visualization (with proportional representation). 
 
 ```python
 from movie_vis import color_avg_vis, kmeans_prop
@@ -34,7 +40,7 @@ kmean_barcode = Image.fromarray(kmean_vis)
 kmean_barcode.save('different_outputfilename')
 ```
 
-Note that some of the other visualizations (most_freq_col, least_freq_col, kcolors) require an already existing KMeans barcode file in order to be created (to reduce redundant compute). 
+##### Note that some of the other visualizations (`most_freq_col`, `least_freq_col`, `kcolors`) require an already existing KMeans barcode file in order to be created (to reduce redundant compute). 
 
 Running the code would be like 
 ```python
@@ -53,7 +59,7 @@ img3 = Image.fromarray(kcolors(kmeans_vis))
 img3.save('somefilename')
 ```
 
-Figure annotations can be done, but it only wraps existing matplotlib customization. You don't need this function to annotate
+##### Figure annotations can be done, but it only wraps existing matplotlib customization. You don't need this function to annotate
 ```python
 from movie_vis import annotate_vis
 
