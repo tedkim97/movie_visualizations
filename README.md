@@ -16,7 +16,7 @@ This repository contains a new movie barcode visualization that uses a clusterin
 ![visualizations6](final_figures/least_freq/spiderman.png?raw=true)
 
 # Instructions
-Depending on the type of visualization you want, you can run the bottom. Note that `kmeans_prop` is the one that generates a KMeans Extracted Visualization (with proportional representation). 
+Depending on the type of visualization you want, you can run the bottom. `kmeans_prop` is the function that generates a KMeans Extracted Visualization (with proportional representation).
 
 ```python
 from movie_vis import color_avg_vis, kmeans_prop
@@ -39,8 +39,7 @@ kmean_vis = kmean_prop(videofile, samplerate, sw, sh,
 kmean_barcode = Image.fromarray(kmean_vis)
 kmean_barcode.save('different_outputfilename')
 ```
-
-##### Note that some of the other visualizations (`most_freq_col`, `least_freq_col`, `kcolors`) require an already existing KMeans barcode file in order to be created (to reduce redundant compute). 
+##### NOTE: Some visualizations (`most_freq_col`, `least_freq_col`, `kcolors`) require an already existing KMeans barcode file in order to be created (to reduce redundant compute). 
 
 Running the code would be like 
 ```python
@@ -82,7 +81,7 @@ plot_param = {'fig_size': (20,10),
 annotate_vis('annotated_output_fname', vis, **plot_param)
 ```
 
-##### If you don't want to use PILLOW
+##### If you don't want to use PILLOW to save images
 ```python
 import cv2
 cv2.imwrite('outputfilename', numpy_array)
