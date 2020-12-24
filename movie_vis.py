@@ -8,7 +8,7 @@ import cv2
 import warnings
 import os
 
-# Driver code to scale visulization dimensions
+# Driver code to scale visualization dimensions
 def gcd(a, b):
     if (b == 0):
         return a
