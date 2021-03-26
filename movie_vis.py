@@ -381,19 +381,6 @@ def annotate_vis(outf: str, img: np.ndarray, **kwargs):
     plt.show()
 
 if __name__ == '__main__':
-    PREFIX = 'E:movies/Shrek (2001) [1080p]'
-    PREFIX2 = 'E:movies/Spider-Man Into The Spider-Verse (2018) [BluRay] [1080p] [YTS.AM]'
-    PREFIX3 = 'E:movies/Mad Max Fury Road (2015) [1080p]'
-    PREFIX4 = 'E:movies/Despicable Me (2010) [1080p]'
-    PREFIX5 = 'E:movies/Coco (2017) [1080p] [YTS.AG]'
-    PREFIX6 = 'E:movies/The Simpsons Movie (2007) [BluRay] [1080p] [YTS.AM]'
-    shrek_movie = PREFIX + "/" + os.listdir(PREFIX)[0]
-    spiderman_movie = PREFIX2 + "/" + os.listdir(PREFIX2)[0]
-    madmax_movie = PREFIX3 + "/" + os.listdir(PREFIX3)[0]
-    minions_movie = PREFIX4 + "/" + os.listdir(PREFIX4)[0]
-    coco_movie = PREFIX5 + "/" + os.listdir(PREFIX5)[0]
-    simpson_movie = PREFIX6 + "/" + os.listdir(PREFIX6)[0]
-
     # Driver Code in how I used it
     # coco_movie = 'MOVIE FILE PATH'
     # spiderman_movie = 'MOVIE FILE PATH'
@@ -418,37 +405,4 @@ if __name__ == '__main__':
     #     produce_vis(downsample_vis, 'dwnsmp_vis/{}.png', lbl, fname, 24, SW, SH)
     #     process_kmean_vis('kmeans_vis/{}.png', lbl, fname, 24, SW, SH, nc)
     
-    test2 = 'D:/scratch/demonstrations/space_odyssey_clip.mp4'
-    # SW = 16
-    # process_kmean_vis('kmeans_vis/{}_8.png', 'space', test2, 12, SW, SH, nc)
-    # process_kmean_vis('kmeans_vis/{}_4.png', 'space', test2, 12, SW, SH, 4)
-    # produce_vis(color_avg_vis, 'avg_vis/{}.png', 'space', test2, 12, SW, SH)
-    # produce_vis(downsample_vis, 'dwnsmp_vis/{}.png', 'space2', test2, 12, SW, SH)
-    
-    # im1 = Image.fromarray(kcolors('final_figures/space_demo/space_4.png'))
-    # im1.save('final_figures/space_demo/kcolor_4.png')
-    # im2 = Image.fromarray(kcolors('final_figures/space_demo/space_8.png'))
-    # im2.save('final_figures/space_demo/kcolor_8.png')
-
-    # Processing visualizations from the KMeans vis
-    # BASE = 'kmeans_vis'
-    # dirs = os.listdir(BASE)
-    # files = [['/'.join([BASE, d, f]) for f in os.listdir('/'.join([BASE, d]))] for d in dirs]
-    # for group in files:
-    #     for fname in group:
-    #         outf1 = fname.split('/')[1:]
-    #         outf1.insert(0, 'most_prom_vis')
-    #         im1 = Image.fromarray(most_freq_col(fname))
-    #         im1.save('/'.join(outf1))
-            
-    #         outf2 = fname.split('/')[1:]
-    #         outf2.insert(0, 'least_prom_vis')
-    #         im2 = Image.fromarray(least_freq_col(fname))
-    #         im2.save('/'.join(outf2))
-
-    #         outf3 = fname.split('/')[1:]
-    #         outf3.insert(0, 'kcolors')
-    #         im3 = Image.fromarray(kcolors(fname))
-    #         im3.save('/'.join(outf3))
-
     print('done')
