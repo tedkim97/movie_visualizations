@@ -39,6 +39,41 @@ kmean_vis = kmean_prop(videofile, samplerate, sw, sh,
 kmean_barcode = Image.fromarray(kmean_vis)
 kmean_barcode.save('different_outputfilename')
 ```
+
+## New Feature: CLI 
+Instead of modifying the code in `movie_vis.py`. You can use the `process_movie.py` script in order to generate the same barcode. For example the example below generates a barcode at `movie_kmeans_vis.png` with `some_movie.mp4` using a sample rate of `1/24`, `5` clusters, and a height multiplier of `4`. 
+```bash
+python3 process_movie.py -f "some_movie.mp4" -o "movie_kmeans_vis" -s 24 -n 5 -m 4
+```
+Full arguments here:
+```bash
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE_PATH, --filepath FILE_PATH
+                        Filepath to a movie file
+  -o OUTPUT_PATH, --output_path OUTPUT_PATH
+                        Filepath to output image (png)
+  -s SAMPLE_RATE, --sample_rate SAMPLE_RATE
+                        Sample rate for frames of the movie. Whole number
+                        greater than 0. Defaults to 24
+  -n NUM_COLORS, --numcolors NUM_COLORS
+                        Number of clusters used in the KMeans Visualization
+  -w SLICE_WIDTH, --width SLICE_WIDTH
+                        Slice width of each color extracted frame. Defaults to
+                        1.
+  -m SLICE_HEIGHT_MULTIPLIER, --height-multiplier SLICE_HEIGHT_MULTIPLIER
+                        Multiplier to increase slice height. Slice height is
+                        determined by calculating the least common multiple of
+                        numbers 1 through num_clusters. Defaults to 2
+  -c, --cuda            Option to enable CUDA acceleration for KMeans.
+                        Requires cuML. Defaults to False
+```
+
+## New Feature: Minor CUDA acceleration
+Leveraging the KMeans implementation - there is a \~1.6x-1.9x speed up of the visualization process. Either use with `cuda=True` or using the `-c/--cuda` flag in `process_movie.py` CLI 
+
+
+
 ##### NOTE: Some visualizations (`most_freq_col`, `least_freq_col`, `kcolors`) require an already existing KMeans barcode file in order to be created (to reduce redundant compute). 
 
 Running the code would be like 
@@ -95,3 +130,4 @@ cv2.imwrite('outputfilename', numpy_array)
 - matplotlib
 - tqdm (not required but will require small tweaks to the code)
 - Pillow (you could replace all instances of PIL.Image.open with cv2)
+- cuML >= 0.18 (if you plan to use the CUDA functionality - requires you to install using conda)
