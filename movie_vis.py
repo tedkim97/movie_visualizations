@@ -218,6 +218,84 @@ def kmeans_prop(fname, sample_rate, slice_w, slice_h, down_sample=0.25, num_clus
     cap.release()
     return vis_output
 
+def kmeans_prop_cuda(fname, sample_rate, slice_w, slice_h, down_sample=0.25, num_clusters=8):
+    """Produce a "most frequent" color visualization video file by iterating
+        over the frames of the source and using a kmean's clustering algorithm using cuda
+    """
+
+    from cuml.cluster import KMeans as KMeansCuda 
+
+    cap = cv2.VideoCapture(fname)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    num_slices = total_frames // sample_rate
+
+    vis_output = np.zeros((slice_h, slice_w * num_slices, 3), dtype='uint8')
+    cluster_model = KMeansCuda(n_clusters=num_clusters, init='scalable-k-means++', n_init=20)
+
+    for i in tqdm(range(total_frames)):
+        ret = cap.grab()
+        if (i % sample_rate) == 0:
+            ret, frame = cap.retrieve()
+            temp_f = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            reduc = cv2.resize(temp_f, None, fx=down_sample, fy=down_sample, interpolation=cv2.INTER_CUBIC).astype('float32')
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                cluster_model.fit(reduc.reshape((-1,3)))
+                colors = np.around(cluster_model.cluster_centers_).astype('uint8')
+            lbl, counts = np.unique(cluster_model.labels_, return_counts=True)
+            cut = slice_h / np.sum(counts)
+            ordering = np.argsort(counts)[::-1]
+            tind = int(i // sample_rate)
+            prev_ind = 0
+            for i, val in enumerate(ordering):
+                height = int(round(cut * counts[val]))
+                l_ind = (tind * slice_w)
+                r_ind = (tind + 1) * slice_w
+                vis_output[prev_ind:prev_ind+height, l_ind:r_ind] = colors[val]
+                prev_ind += height
+            
+    cap.release()
+    return vis_output
+
+def kmeans_prop_cuda_batch(fname, sample_rate, slice_w, slice_h, down_sample=0.25, num_clusters=8, batch_size=1):
+    """Produce a "most frequent" color visualization video file by iterating
+        over the frames of the source and using a kmean's clustering algorithm using cuda
+    """
+
+    from cuml.cluster import KMeans as KMeansCuda 
+
+    cap = cv2.VideoCapture(fname)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    num_slices = total_frames // sample_rate
+
+    vis_output = np.zeros((slice_h, slice_w * num_slices, 3), dtype='uint8')
+    cluster_model = KMeansCuda(n_clusters=num_clusters, init='scalable-k-means++', n_init=20)
+
+    for i in tqdm(range(total_frames)):
+        ret = cap.grab()
+        if (i % sample_rate) == 0:
+            ret, frame = cap.retrieve()
+            temp_f = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            reduc = cv2.resize(temp_f, None, fx=down_sample, fy=down_sample, interpolation=cv2.INTER_CUBIC).astype('float32')
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                cluster_model.fit(reduc.reshape((-1,3)))
+                colors = np.around(cluster_model.cluster_centers_).astype('uint8')
+            lbl, counts = np.unique(cluster_model.labels_, return_counts=True)
+            cut = slice_h / np.sum(counts)
+            ordering = np.argsort(counts)[::-1]
+            tind = int(i // sample_rate)
+            prev_ind = 0
+            for i, val in enumerate(ordering):
+                height = int(round(cut * counts[val]))
+                l_ind = (tind * slice_w)
+                r_ind = (tind + 1) * slice_w
+                vis_output[prev_ind:prev_ind+height, l_ind:r_ind] = colors[val]
+                prev_ind += height
+            
+    cap.release()
+    return vis_output
+
 def most_freq_col(fname):
     """Function to produce a "most frequent" visualization from an existing
     kmeans visualization.
@@ -316,7 +394,9 @@ def produce_vis(vis_func, str_format, nickname, fname, framerate, slice_w, slice
     print("done processing:", fname)
     return True
 
-def process_kmean_vis(str_format, nickname, fname, framerate, slice_w, slice_h, num_col):
+# TODO: decide to keep or delete the str_format & nickname for image naming.
+# It was an artifact when I ran visualization in batches
+def process_kmean_vis(str_format, nickname, fname, framerate, slice_w, slice_h, num_col, cuda=False):
     """Computes and writes to disk a KMeans visualization from the function
     [kmeans_prop] with the parameters above.
 
@@ -335,7 +415,10 @@ def process_kmean_vis(str_format, nickname, fname, framerate, slice_w, slice_h, 
         Returns True if the function completes with no error.
 
     """
-    vis = kmeans_prop(fname, framerate, slice_w, slice_h, down_sample=0.25, num_clusters=num_col)
+    if (cuda):
+        vis = kmeans_prop_cuda(fname, framerate, slice_w, slice_h, down_sample=0.25, num_clusters=num_col)
+    else:
+        vis = kmeans_prop(fname, framerate, slice_w, slice_h, down_sample=0.25, num_clusters=num_col)
     im = Image.fromarray(vis)
     im.save(str_format.format(nickname))
     print("done processing:", fname)
@@ -344,7 +427,7 @@ def process_kmean_vis(str_format, nickname, fname, framerate, slice_w, slice_h, 
 def load_image(fname):
     """Returns an image as a matplotlib compatabile numpy array with cv2
 
-    TODO: I'll probably delete this because it's pretty redundant adn only useful
+    TODO: I'll probably delete this because it's pretty redundant and only useful
     in jupyter notebooks
     """
     return cv2.cvtColor(cv2.imread(fname), cv2.COLOR_RGB2BGR)
@@ -381,28 +464,16 @@ def annotate_vis(outf: str, img: np.ndarray, **kwargs):
     plt.show()
 
 if __name__ == '__main__':
-    # Driver Code in how I used it
-    # coco_movie = 'MOVIE FILE PATH'
-    # spiderman_movie = 'MOVIE FILE PATH'
-    # simpson_movie = 'MOVIE FILE PATH'
-    # minions_movie = 'MOVIE FILE PATH'
-    # shrek_movie = 'MOVIE FILE PATH'
-    # madmax_movie = 'MOVIE FILE PATH'
-
-    # movs = [coco_movie, simpson_movie, minions_movie, madmax_movie, spiderman_movie, shrek_movie]
-    # mov_lbl = ['coco', 'simpson', 'minions', 'madmax', 'spiderman', 'shrek']
-    nc = 8
-    SW = 1 # slice width
+    # Driver Code
+    movie_file_path = '' # some path to an mp4 file
+    num_colors = 7 # for KMeans extractions
+    slice_width = 1 # in pixels
+    slice_height_multiplier = 3 # to increase visual clarity
     # By locking the height to the least common multiple of numbers [1, 8+1]
     # we can guarentee that the visualization will fit all the colors without
     # any off-by-one errors for all clusters <= 8
-    SH = lcm_n([x for x in range(1, 9)]) * 2
+    slice_height = lcm_n([x for x in range(1, num_colors + 1)]) * slice_height_multiplier
 
-    print(nc, SW, SH)
-    # for ind, (fname, lbl) in enumerate(zip(movs, mov_lbl)):
-    #     print('STARTING:', fname, '-- label:', lbl)
-    #     produce_vis(color_avg_vis, 'avg_vis/{}.png', lbl, fname, 24, SW, SH)
-    #     produce_vis(downsample_vis, 'dwnsmp_vis/{}.png', lbl, fname, 24, SW, SH)
-    #     process_kmean_vis('kmeans_vis/{}.png', lbl, fname, 24, SW, SH, nc)
+    process_kmean_vis('visualization_image_{}.png', 'moviename', movie_file_path, 24, slice_width, slice_height, num_colors, cuda=False)
     
     print('done')
